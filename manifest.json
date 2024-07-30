@@ -1,0 +1,33 @@
+{
+    "name": "bih",
+    "version": "3.0.0",
+    "description": "This is an extension to look up concerts coming to Toronto",
+    "manifest_version": 3,
+    "author": "Tan Akpek",
+    "permissions": [
+        "activeTab",
+        "tabs",
+        "sidePanel",
+        "identity",
+        "cookies"
+    ],
+    "content_security_policy": {
+        "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+    },
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoyCpAFA2Iys6uEeyZKRbaSMcbMQY2jfhAktYXHlZF+bNEC5aXyoYOTqntAQYY01yunEehuxnK4mJ8pY6trWtNSnlXyelW+t/8Xn0ui28kTZp6IdIZA8xhwkaepJCC5/TFdnHkLcHD1JLZdCWptwywx1CRYK78WOm9iC2VDIIlNrTunfyc0+8h43Fxt/4UX1aIik/+eBGaiVDl8jj8Oj9Q81cJCWdQy0rbTg7jcVvBLWvWQY3XvbpZWSqjoQpjUGf2gD7NvMwX6+99MnG0zk0Q/UlJG/FFXAmOKXzVHb2BA0ohC2nx3gxD74GjfN30cMGFbtaDL7r+fZAzHe1+p7RsQIDAQAB",
+    "oauth2": {
+        "client_id": "1044586183876-h7cmc1bknbi0jocd7s0i2oj6beq87bo8.apps.googleusercontent.com",
+        "scopes": ["https://www.googleapis.com/auth/userinfo.email"]
+    },
+    "host_permissions":[
+        "*://*/*"
+    ],
+    "side_panel": {
+        "default_path": "index.html"
+    },
+    
+    "background": {
+        "service_worker": "service-worker.js"
+    }
+
+}
