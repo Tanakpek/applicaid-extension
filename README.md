@@ -1,4 +1,5 @@
 # React + TypeScript + Vite
+    "build": "tsc && vite build && cp manifest.json ./dist/manifest.json && npx tsc --moduleResolution node --module esnext ./service-worker.ts --outDir dist && npx tsc --moduleResolution node --module esnext ./content-script.ts --outDir dist",
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

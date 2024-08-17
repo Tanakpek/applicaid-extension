@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -12,8 +12,16 @@ import LoginView from './components/mine/login'
 import { TabsDemo } from './components/mine/generate'
 import { Card } from './components/ui/card'
 
+import { ScrapeInstructions, ScrapeOp, } from "./lib/scrapers/generic_scraper"
+import { GenericScraper } from "./lib/scrapers/generic_scraper"
+const regexp = "^https:\/\/www\.linkedin\.com\/jobs\/collections\/recommended\/\?currentJobId=\d+(&[a-zA-Z0-9_=%-]+)*$"
+
+
+
 function App() {
   const {user,login, logout} = useAuth() 
+  
+  const scrpr = useRef(new GenericScraper(regexp, []))
   const handleClick = async () => {
     // Handle click
 
@@ -36,6 +44,7 @@ function App() {
   };
   
   useEffect(() => {
+
     getProfile().then((data) => {
       console.log(data)
       if(data){
@@ -50,6 +59,8 @@ function App() {
   return (
 
     <div className='w-full'>
+      
+      <button onClick={scrpr.current.scrape}> scrape </button>
       {user &&
       
          <div className='w-full'>

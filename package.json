@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && cp manifest.json ./dist/manifest.json && npx tsc --moduleResolution node --module esnext ./service-worker.ts --outDir dist",
+    "build": "tsc && vite build && cp manifest.json ./dist/manifest.json && npx tsc --moduleResolution node --module esnext ./service-worker.ts --outDir dist && npx tsc --moduleResolution node --module esnext ./content-script.ts --outDir dist",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -15,9 +15,11 @@
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tabs": "^1.1.0",
+    "@types/jsdom": "^21.1.7",
     "axios": "^1.7.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "jsdom": "^24.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tailwind-merge": "^2.2.2",

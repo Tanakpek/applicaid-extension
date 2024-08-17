@@ -1,5 +1,5 @@
 {
-    "name": "bih",
+    "name": "Applicaid",
     "version": "3.0.0",
     "description": "This is an extension to look up concerts coming to Toronto",
     "manifest_version": 3,
@@ -9,6 +9,7 @@
         "tabs",
         "sidePanel",
         "identity",
+        "storage",
         "cookies"
     ],
     "content_security_policy": {
@@ -26,6 +27,12 @@
         "default_path": "index.html"
     },
     
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["content-script.js"]
+        }
+    ],
     "background": {
         "service_worker": "service-worker.js"
     }

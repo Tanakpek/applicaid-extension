@@ -31,7 +31,6 @@ function LoginView() {
     return (
         <div>
             <h1>Applicaid</h1>
-            <a href={google_oauth_url} className="flex items-center gap-2 justify-center">Login with google</a>
             <Button onClick={handleClick}>Login</Button>
             <div className="card">
                 <button onClick={() => setCount((count) => count + 1)}>
