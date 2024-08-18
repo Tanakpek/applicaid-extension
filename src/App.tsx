@@ -12,16 +12,13 @@ import LoginView from './components/mine/login'
 import { TabsDemo } from './components/mine/generate'
 import { Card } from './components/ui/card'
 
-import { ScrapeInstructions, ScrapeOp, } from "./lib/scrapers/generic_scraper"
-import { GenericScraper } from "./lib/scrapers/generic_scraper"
 const regexp = "^https:\/\/www\.linkedin\.com\/jobs\/collections\/recommended\/\?currentJobId=\d+(&[a-zA-Z0-9_=%-]+)*$"
 
 
 
 function App() {
   const {user,login, logout} = useAuth() 
-  
-  const scrpr = useRef(new GenericScraper(regexp, []))
+
   const handleClick = async () => {
     // Handle click
 
@@ -60,7 +57,7 @@ function App() {
 
     <div className='w-full'>
       
-      <button onClick={scrpr.current.scrape}> scrape </button>
+      <button onClick={console.log}> scrape </button>
       {user &&
       
          <div className='w-full'>

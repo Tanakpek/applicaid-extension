@@ -1,15 +1,20 @@
 
-import { JSDOM } from 'jsdom'
+
 //CONFIG
 
-
+import { findScrapeInstructions, setInstructions } from "./codes"
+import { ScrapeInstructions } from "./content_script"
+import { ScrapeInstrApiResponse } from "./types"
 
 //cache conditional: if (instructions && Object.keys(instructions).length > 0 && instructions.ts && instructions.ts > Date.now() - 1000 * 60
 const BACKEND_URL = 'https://127.0.0.1:3000/'
 const FE_ORIGIN = 'https://127.0.0.1:5173/'
 const ORIGINS = ['https://www.linkedin.com']
-const root_url_extractor = RegExp(/^(https ?: \/\/[^\/:?#]+(?:\:[0-9]+)?)/,'i')
 
+// vars
+let throttle: boolean = false
+let token = null
+let all_instructions: {[job_board: string]: [RegExp, ScrapeInstructions][]} = {}
 
 const fetchA = async (url: string, options: any) => {
     token = await chrome.cookies.get({ url: FE_ORIGIN, name: 'token' }, (cookie) => {
@@ -22,19 +27,9 @@ const fetchA = async (url: string, options: any) => {
     return await fetch(url, options)
 }
 
-let throttle:boolean = false
-//chrome.sidePanel.open({path: 'index.html', width: 500, height: 500})
-let token = null
+
 
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true })
-
-
-
-
-
-
-
-
 chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
     if (!tab.url) return;
     const url = new URL(tab.url);
@@ -83,16 +78,13 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 })
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-
     // getting current tab
     if(message.type === 'get_tab'){
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            const full = tabs[0].url
-            
-            console.log('getting instructions')
-            // would be a cache hit
+            const full_url = tabs[0].url
+            // would be a cache miss
             if (true) {
-                fetchA(`${BACKEND_URL}scraping`, {
+                fetchA(`${BACKEND_URL}scrape_instructions/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -100,15 +92,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     }
                 })
                 .then((response) => {
-                    return response.json().then((scrape_instruction_data) => {
-                        console.log(scrape_instruction_data)
-                        // scrape instruction and tab data
+                    return response.json().then((scrape_instruction_data: ScrapeInstrApiResponse) => {
+                        const origin = new URL(full_url).origin
+                        all_instructions = setInstructions(scrape_instruction_data)
+                        const scrape_instructions = findScrapeInstructions(scrape_instruction_data, all_instructions, origin, full_url)
                         sendResponse({
-                            data: scrape_instruction_data.data,
-                            origin: new URL(full).origin,
-                            full,
-                            // TODO (logic depending on any regex mathces, otherwords, if scrape instruction data contains instructions that was not filtered out)
-                            scrape: true
+                            data: scrape_instructions ? scrape_instructions :  null,
+                            origin,
+                            full_url,
+                            scrape: scrape_instructions ? true : false
                         })
                         return chrome.storage.local.set({ 'applicaid_scrape_instructions': scrape_instruction_data }).then(() => {
                             console.log('saved')
@@ -116,12 +108,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         })
 
                     }).catch((err) => {
-                        console.log('json error')
+                        console.log('error while parsing scrape instructions from api')
                         console.log(err)
+                        sendResponse({
+                            data: null,
+                            origin,
+                            full_url,
+                            scrape: false
+                        })
                     })
                 })
             }
-            // cache miss (hypothetical)
+            // cache hit
             else{
                 fetchA(`${BACKEND_URL}scraping`, {
                     method: 'GET',
@@ -137,8 +135,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         // scrape instruction and tab data
                         sendResponse({
                             data: scrape_instruction_data,
-                            origin: new URL(full).origin,
-                            full
+                            origin: new URL(full_url).origin,
+                            full_url
                         })
                         return chrome.storage.local.set({ 'applicaid_scrape_instructions': scrape_instruction_data }).then(() => {
                             console.log('saved')
@@ -153,9 +151,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     if (message.type === 'scraped_page') {
         console.log('scraped')
-        console.log(typeof message.data)
-        const vdom = new JSDOM(message.data)
-        console.log(vdom)
+        
+        console.log('this')
+        
         
         // fetchA(`${BACKEND_URL}scraping`, {
         //     method: 'POST',
